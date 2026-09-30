@@ -1,9 +1,7 @@
-import * as dotenv from 'dotenv';
-dotenv.config();
-const token = localStorage.getItem('jwtToken');
-
+// export const name = (param: Type) => whatToReturn;
 // Allmän API function för att göra fetch requests till olika endpoints
 export async function api<T>(base : string,path: string, options:RequestInit = {}) : Promise<T> {
+  const token = localStorage.getItem('jwtToken');
   try {
     const response = await fetch(`${base}${path}`,{
       ...options,
@@ -23,5 +21,5 @@ export async function api<T>(base : string,path: string, options:RequestInit = {
   }
 }
 
-export const authApi = (path: string, options?: RequestInit) => api(process.env.AUTH_API_URL!, path, options)
-export const notesApi = (path: string, options?: RequestInit) => api(process.env.NOTES_API_URL!, path, options)
+export const authApi = <T>(path: string, options?: RequestInit) => api<T>(import.meta.env.VITE_AUTH_API_URL, path, options)
+export const contentApi = <T>(path: string, options?: RequestInit) => api<T>(import.meta.env.VITE_NOTES_API_URL, path, options)
