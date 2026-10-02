@@ -1,12 +1,11 @@
 import { contentApi } from "./client.ts";
 import type { Note } from "../types";
 
-export const getNotes = () => contentApi<Note[]>(`/notes`);
+export const getNotes = (boardId: number) => contentApi<Note[]>(`/notes/${boardId}`);
 
 export const getNoteById = (noteId: number) => contentApi<Note>(`/notes/${noteId}`);
 
 export const createNote = (noteData: {
-  author_id: number;
   note: string;
   boardId: number;
   color: string;
