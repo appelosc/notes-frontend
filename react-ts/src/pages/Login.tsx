@@ -4,33 +4,22 @@ import { useNavigate } from "react-router";
 import { loginUser, registerUser } from "../api/users";
 
 function Login() {
-  // Which form is shown. The type "login" | "register" means
-  // this variable can ONLY ever be one of those two strings.
+  //Behövliga variabler för react state
   const [mode, setMode] = useState<"login" | "register">("login");
-
-  // What the user has typed in the inputs.
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
-  // Text shown under the form (success or error).
   const [message, setMessage] = useState("");
 
-  // Function from react-router that lets us change page in code.
   const navigate = useNavigate();
 
-  // Runs when the form is submitted (button click or Enter key).
-  // "async" lets us use "await" to wait for the backend to answer.
-  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
-    // Stop the browser from reloading the page (default form behavior).
-    event.preventDefault();
+  // loginform funktion
 
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
     try {
       if (mode === "login") {
         const result = await loginUser({ username, password });
-        // Save the token. client.ts reads this same key ("jwtToken")
-        // and sends it with every later request.
         localStorage.setItem("jwtToken", result.token);
-        // Go to the boards page.
         navigate("/boards");
       } else {
         await registerUser({ username, password });
@@ -38,8 +27,6 @@ function Login() {
         setMode("login");
       }
     } catch (error) {
-      // "error" has type "unknown" in TS, so we check that it is
-      // a real Error before reading .message from it.
       if (error instanceof Error) {
         setMessage("Something went wrong: " + error.message);
       } else {
@@ -48,20 +35,17 @@ function Login() {
     }
   }
 
-  // Tailwind classes for the two switch buttons.
-  // The selected one gets the blue accent color, the other stays gray.
+  //----- Skriven av Claude Code Opus 5.5 -----
   const activeTab = "flex-1 cursor-pointer rounded-md py-2 font-medium bg-[#7389AE] text-white shadow";
   const inactiveTab = "flex-1 cursor-pointer rounded-md py-2 font-medium text-gray-600 hover:text-gray-900";
 
   return (
-    // Full-screen gray background with the card centered in the middle.
     <div className="flex min-h-screen items-center justify-center bg-[#E0E0E2] p-4">
       <div className="flex w-full max-w-sm flex-col gap-6 rounded-2xl bg-white p-8 shadow-lg">
         <h1 className="text-center text-2xl font-semibold text-gray-800">
           {mode === "login" ? "Welcome back" : "Create an account"}
         </h1>
 
-        {/* Buttons to switch between login and register */}
         <div className="flex gap-1 rounded-lg bg-[#E0E0E2] p-1">
           <button
             type="button"
@@ -102,11 +86,11 @@ function Login() {
           </button>
         </form>
 
-        {/* Only show the message if there is one */}
         {message && <p className="text-center text-sm text-gray-600">{message}</p>}
       </div>
     </div>
   );
+  // ----- Slut på skriven av Claude Code Opus 5.5 -----
 }
 
 export default Login;

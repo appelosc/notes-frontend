@@ -1,5 +1,7 @@
 import { authApi } from './client';
 
+// Auth API:ns endpoints, 1 för registering och 1 för inloggning
+
 export const registerUser = (userData: { username: string; password: string }) : Promise<string> => authApi<string>(`/auth/register`, {
   method: 'POST',
   body: JSON.stringify(userData),

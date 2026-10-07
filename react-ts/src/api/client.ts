@@ -21,5 +21,7 @@ export async function api<T>(base : string,path: string, options:RequestInit = {
   }
 }
 
+// exporterar 2 endpoints som använder sig av api functionen ovan. authApi används för endpoints som använder inloggnings API, 
+// contentApi används för endpoints som har med notes API att göra. 
 export const authApi = <T>(path: string, options?: RequestInit) => api<T>(import.meta.env.VITE_AUTH_API_URL, path, options)
 export const contentApi = <T>(path: string, options?: RequestInit) => api<T>(import.meta.env.VITE_NOTES_API_URL, path, options)
