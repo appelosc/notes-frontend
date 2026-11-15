@@ -1,43 +1,62 @@
-## Projektbeskrivning
+# Notes Board App – Frontend
 
-## Översikt
+## Overview
 
-Detta är en virtuell whiteboard skapad i React där användare kan samarbeta och planera sina projekt genom att skapa olika notes (Post-it-lappar). Den kan användas för projektplanering eller brainstorming.
-Projektet använder sig av två databaser samt två externa API:er.
+This is a virtual whiteboard built in React where users can collaborate and plan their projects by creating notes (sticky notes). It can be used for project planning or brainstorming.
+The project uses two databases and two external APIs.
 
+This is one of three parts of the Notes Board App:
 
-## Arkitektur
+- [authn-authz](https://github.com/appelosc/authn-authz): authentication API that issues the JWTs
+- [REST-api-notes](https://github.com/appelosc/REST-api-notes): boards and notes API
+- **notes-frontend** (this repo): React and TypeScript frontend, styled with Tailwind CSS
 
-Projektet använder sig av två externa API:er. Det ena är ett autentiserings-API med endpointsen `/auth/login` och `/auth/register`, som används för att registrera nya användare och logga in dem. En inloggad användare får en signerad `jwt-token` som skickas med i varje request för att auktorisera requests mot Notes-API:t.
+## Getting started
 
-Notes-API:t håller reda på boards samt notes och serverar innehåll till frontenden. Det verifierar den sparade JWT-tokenen i varje request via en `authorization header`. Tokenen används av middleware i Notes-API:t för att auktorisera varje request innan den körs. Middlewaren kollar om användaren har tillgång till en viss board och visar sedan de notes som tillhör boarden. PUT/PATCH/DELETE anropas i stil med `/notes/boardId/noteId`. POST anropas endast med `/notes`. GET anropas i stil med `/notes/boardId`.
+Create a `.env` file in the project root with the base URLs of the two APIs:
 
-Flödet är: Frontend -> Auth-API för JWT, sedan Frontend -> Notes-API med token.
+```env
+VITE_AUTH_API_URL=http://localhost:3001
+VITE_NOTES_API_URL=http://localhost:3002
+```
 
-I `src/api` finns alla API-anrop. I `client.ts` finns en generell fetch-funktion, och filen exporterar två generella fetch-anrop med base path till respektive API.
+Then install and run:
 
-Dessa två används i `boards.ts`, `notes.ts` och `users.ts` för att definiera funktioner som gör olika anrop till sina endpoints.
+```bash
+npm install
+npm run dev
+```
 
-`src/pages` innehåller alla sidor som användaren kan se, såsom inloggningssidan, board-sidan och note-sidan.
+## Architecture
 
-`src/types` innehåller interfaces för de objekt som API:erna returnerar.
+The project uses two external APIs. One is an authentication API with the endpoints `/auth/login` and `/auth/register`, used to register new users and log them in. A logged-in user gets a signed JWT, which is sent with every request to authorize requests to the Notes API.
+
+The Notes API keeps track of boards and notes and serves content to the frontend. It verifies the stored JWT in every request through an `Authorization` header. Middleware in the Notes API uses the token to authorize each request before it runs. The middleware checks whether the user has access to a given board and then returns the notes that belong to it. PUT, PATCH and DELETE are called as `/notes/boardId/noteId`. POST is called with only `/notes`. GET is called as `/notes/boardId`.
+
+The flow is: Frontend -> Auth API for a JWT, then Frontend -> Notes API with the token.
+
+`src/api` contains all API calls. `client.ts` holds a general fetch function, and the file exports two general fetch calls with the base path to each API.
+
+These two are used in `boards.ts`, `notes.ts` and `users.ts` to define functions that call their endpoints.
+
+`src/pages` contains all pages the user can see, such as the login page, the board page and the note page.
+
+`src/types` contains interfaces for the objects the APIs return.
 
 ## Deployment
 
-Båda API:erna är driftsatta på CSC Rahti och körs via Docker. Secrets som JWT-secret och databas-URL är definierade i deploymentsen på CSC Rahti. Frontenden är driftsatt på `people.arcada.fi`.
+Both APIs are deployed on CSC Rahti and run in Docker. Secrets such as the JWT secret and the database URL are defined in the deployments on CSC Rahti. The frontend is deployed on `people.arcada.fi`.
 
+## AI usage
 
-## AI-användning
+I chose to challenge myself and write the frontend in React and TypeScript. I had no earlier experience with either (I experimented very minimally with React during the summer). AI was used in the frontend development as a research partner, mainly to help me understand the syntax and make progress in the coding. The threshold was fairly high because I started from the basics with React. All `.ts` files are written by me, and there AI only helped when I did not understand something.
 
-Jag valde att utmana mig själv och koda frontenden i React och TypeScript. Jag har ingen tidigare erfarenhet av någotdera (jag experimenterade väldigt minimalt med React under sommaren). AI har använts i frontendutvecklingen som researchpartner, i huvudsak för att hjälpa mig förstå syntaxen och komma framåt i kodandet. Tröskeln har varit ganska hög eftersom jag har börjat från grunderna när det kommer till React. Alla .ts-filer är skrivna av mig, och där har AI endast fungerat som hjälp när jag inte förstått något.
+In `/pages` I used `Claude Code v2.1.284 Opus 5.5` to generate a large part of the JSX code. I understand the generated code, and it was generated with the mindset that this is NOT a frontend course focused on React and TypeScript. The generated code is mainly boilerplate JSX and Tailwind styling. All code generated with the coding tool is watermarked with `----- Skriven av Claude Code Opus 5.5 -----` and `----- Slut på skriven av Claude Code Opus 5.5`.
 
-I `/pages` har jag använt mig av `Claude Code v2.1.284 Opus 5.5` för att generera en stor del av JSX-koden. Jag förstår koden som genererats, och den har genererats med tankesättet att detta INTE är en frontendkurs som fokuserar på React och TypeScript. Den genererade koden är i huvudsak boilerplate-JSX och Tailwind-styling. All kod som är genererad via kodverktyget är vattenmärkt med `----- Skriven av Claude Code Opus 5.5 -----` och `----- Slut på skriven av Claude Code Opus 5.5`.
+Without this tool I would not have had time to build the project with this framework, because a large part of my time went into understanding the logic of React and TS (things like useState, useEffect and so on) and the TypeScript syntax itself.
 
-Utan detta verktyg skulle jag inte ha hunnit skapa projektet med detta ramverk, eftersom en stor del av min tid gick åt till att förstå logiken i React och TS (saker som useState, useEffect etc.) och själva TypeScript-syntaxen.
+## Personal reflection
 
+I think the project went fairly well. The API part was not that hard; we went through all the concepts we needed thoroughly in class and it went quite smoothly. The hard part of the APIs was showing the right error messages and debugging. For example, at first I filtered the notes a user could see by `author_id`, which later turned out to be a mistake because users could then only see their own notes. I had to redesign the endpoints.
 
-## Personlig reflektion
-
-Jag tycker att projektet lyckades ganska bra. Själva API-delen var inte så svår; vi gick igenom alla koncept som behövdes ordentligt på lektionerna och det gick ganska smidigt. Det jobbiga med API:erna var att visa rätt felmeddelanden och att debugga. Till exempel sorterade jag i början de notes man fick se via `author_id`, vilket senare visade sig vara ett misstag eftersom man då endast kunde se sina egna notes. Då var jag tvungen att formulera om endpointsen på nytt.
-
-Frontenden var ganska jobbig. Jag vet inte om det var lite för ambitiöst att ta i bruk ett helt nytt ramverk och språk (även om det i princip är JS). Det gick väldigt mycket tid åt till att förstå syntaxen och hur man strukturerar ett React-projekt, eftersom allt var nytt. Jag skulle ändå säga att det var värt det, eftersom React i sig är väldigt praktiskt när man väl förstår det och kan använda sig av useState och låta React sköta renderingen osv. istället för att själv manipulera med innerHTML.
+The frontend was quite demanding. I don't know whether it was a bit too ambitious to adopt a completely new framework and language (even though it is basically JS). A lot of time went into understanding the syntax and how to structure a React project, because everything was new. I would still say it was worth it, because React is very practical once you understand it and can use useState and let React handle the rendering, instead of manipulating innerHTML yourself.
